@@ -1,7 +1,6 @@
 #!/usr/local/rbenv_data/shims/ruby
 require "rubygems"
-#require "simple_rotate"
-require "~/simple_rotate/trunk/lib/simple_rotate"
+require "simple_rotate"
 require "pp"
 require 'minitest/unit'
 require "mathn"
