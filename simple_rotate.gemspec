@@ -10,8 +10,7 @@ Gem::Specification.new do |spec|
   spec.description           = %q{simple_rotate is a library that logging & to rotate the ruby's log.}
   spec.summary               = %q{Logger for Ruby.}
   spec.homepage              = docs_page
-  spec.authors               = ["nyanko"]
-  spec.email                 = ["nyanko@dammy"]
+  spec.authors               = ["khotta"]
   spec.license               = "MIT"
   spec.post_install_message  = "#{$-0}\e[5mThank you for installing! (^-^)\e[0m"
   spec.post_install_message += "#{$-0}See also \e[31m\e[47m \e[4m#{docs_page} \e[0m#{$-0}#{$-0}"

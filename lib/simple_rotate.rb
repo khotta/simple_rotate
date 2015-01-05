@@ -1,6 +1,6 @@
 # SimpleRotate - simple logger for ruby
-# @autor: Kazuya Hotta (nyanko)
-#
+# @autor: Kazuya Hotta
+
 require "singleton"
 require "monitor"
 
