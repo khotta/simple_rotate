@@ -1,33 +1,33 @@
 # coding: utf-8
-lib = File.expand_path('../lib', __FILE__)
+lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'simple_rotate'
-docs_page = "http://khotta.github.io/simple_rotate"
+require "simple_rotate"
 
 Gem::Specification.new do |spec|
-  spec.name                  = "simple_rotate"
-  spec.version               = SimpleRotate::VERSION
-  spec.description           = %q{simple_rotate is a library that logging & to rotate the ruby's log.}
-  spec.summary               = %q{Logger for Ruby.}
-  spec.homepage              = docs_page
-  spec.authors               = ["khotta"]
-  spec.license               = "MIT"
-  spec.post_install_message  = "#{$-0}\e[5mThank you for installing! (^-^)\e[0m"
-  spec.post_install_message += "#{$-0}See also \e[31m\e[47m \e[4m#{docs_page} \e[0m#{$-0}#{$-0}"
+    spec.name                 = SimpleRotate::LIBS_NAME
+    spec.version              = SimpleRotate::VERSION
+    spec.summary              = SimpleRotate::SUMMARY
+    spec.description          = SimpleRotate::DESCRIPTION
+    spec.homepage             = SimpleRotate::HOMEPAGE
+    spec.name                 = "simple_rotate"
+    spec.authors              = ["khotta"]
+    spec.license              = "MIT"
+    spec.email                = ["khotta116@gmail.com"]
+    spec.post_install_message = "#{$-0}Thank you for installing! =(^x^="
 
-  # include files to this gem package.
-  spec.files  = Dir["*.txt"]
-  spec.files += Dir['lib/*.rb']
+    # include files to this gem package.
+    #spec.files  = Dir["*.txt"]
+    #spec.files += Dir["*.md"]
+    spec.files  = Dir["lib/*.rb"]
+    spec.files += Dir["lib/simple_rotate/*.rb"]
+    spec.files += Dir["lib/simple_rotate/internal/*.rb"]
 
-  # The platform this gem runs on.
-  #spec.platform = Gem::Platform.local
+    # The platform this gem runs on.
+    #spec.platform = Gem::Platform.local
 
-  # required ruby version
-  #spec.required_ruby_version = '>= 1.9.0'
+    # required ruby version
+    spec.required_ruby_version = '>= 1.9.3'
 
-  # required path from simple_rotate
-  spec.require_paths = ["lib"]
-
-  #spec.executables = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
-  #spec.test_files  = spec.files.grep(%r{^(test|spec|features)/})
+    # required path from simple_rotate
+    spec.require_paths = ["lib"]
 end

@@ -1,8 +1,7 @@
-#!/usr/local/rbenv_data/shims/ruby
-require "rubygems"
+require "minitest/autorun"
+require "minitest/unit"
 require "simple_rotate"
 require "pp"
-require 'minitest/unit'
 require "mathn"
 require "parallel"
 
@@ -18,7 +17,7 @@ class Test
   end
 end
 
-class TestSimpleRotate < MiniTest::Unit::TestCase
+class TestSimpleRotate < MiniTest::Test
   def setup
     @logger = SimpleRotate.instance
   end
@@ -30,7 +29,7 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
   def dump_var(var)
     val = @logger.instance_variable_get(var)
     header = "#{var}: "
-    rst(val, header)
+    output_result(val, header)
   end
 
   def dump_file(file)
@@ -71,7 +70,7 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
     print $-0
   end
 
-  def rst(msg, header=" ")
+  def output_result(msg, header=" ")
     print "\e[7m"
     print "\e[36m"
     print "[RESULT]"
@@ -190,7 +189,7 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
   end
 
   def test_init_file_name_1
-    pgm = %{rst @logger.init()}
+    pgm = %{output_result @logger.init()}
     exe pgm
 
     file = "#{$0}.log"
@@ -205,7 +204,7 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
   end
 
   def test_init_file_name_2
-    file = "file_name.log"
+    file = "foo.log"
     pgm = %{@logger.init("#{file}")}
     exe pgm
 
@@ -219,7 +218,7 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
   end
 
   def test_init_file_name_3
-    file = "/home/nyanko/logs/file_name.log"
+    file = "/var/log/test/foo.log"
     pgm = %{@logger.init("#{file}")}
     exe pgm
 
@@ -233,7 +232,7 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
   end
 
   def test_init_file_name_4
-    pgm =  %{rst @logger.init(:STDOUT)}
+    pgm =  %{output_result @logger.init(:STDOUT)}
     exe pgm
 
     pgm = %{@logger.w("file name => :STDOUT")}
@@ -244,7 +243,7 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
   end
 
   def test_init_file_name_error_1
-    pgm = %{@logger.init("/root/file_name.log")}
+    pgm = %{@logger.init("/root/foo.log")}
     exe pgm
   end
 
@@ -254,7 +253,7 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
   end
 
   def test_init_file_name_error_3
-    pgm = %{@logger.init("/home/nyanko/logs")}
+    pgm = %{@logger.init("/tmp")}
     exe pgm
   end
 
@@ -267,7 +266,7 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
     file = "init_limit.log"
     pgm = %{@logger.init("#{file}")}
     exe pgm
-    write_to(file, 4000)
+    write_to(file, 300000)
   end
 
   def test_init_limit_2
@@ -353,17 +352,17 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
     pgm = %{@logger.init("#{file}", "DAILY")}
     exe pgm
 
-    write_to(file, 4000)
+    write_to(file, 300000)
   end
 
   def test_init_limit_12
-    file = "/home/nyanko/logs/init_limit.log"
+    file = "/var/log/test/init_limit.log"
     pgm = %{@logger.init("#{file}", "100K")}
     exe pgm
 
     write_to(file, 300)
 
-    pgm = "ls -ltrh ~/logs"
+    pgm = "ls -ltrh /var/log/test/"
     func pgm
     eval "puts `#{pgm}`"
   end
@@ -428,7 +427,7 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
 
     tip "block start"
     @logger.init(file) do |obj|
-      pgm = %{rst @logger.file_closed?}
+      pgm = %{output_result @logger.file_closed?}
       exe pgm
 
       pgm = %{obj.w "test"}
@@ -445,7 +444,7 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
     end
     tip "block end"
 
-    pgm = %{rst @logger.file_closed?}
+    pgm = %{output_result @logger.file_closed?}
     exe pgm
 
     dump_file file
@@ -589,7 +588,7 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
     pgm = %{@logger.init("#{file}")}
     exe pgm
 
-    pgm = %(rst @logger.w "aaa")
+    pgm = %(output_result @logger.w "aaa")
     exe pgm
 
     pgm = %{@logger.w 9.999}
@@ -631,7 +630,7 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
     pgm = %{@logger.init("#{file}")}
     exe pgm
 
-    pgm = %{rst @logger.file_closed?}
+    pgm = %{output_result @logger.file_closed?}
     exe pgm
 
     func %{@logger.e}
@@ -644,16 +643,16 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
     pgm = %{@logger.init(:STDOUT)}
     exe pgm
 
-    pgm = %{rst @logger.file_closed?}
+    pgm = %{output_result @logger.file_closed?}
     exe pgm
 
-    pgm = %{rst @logger.e}
+    pgm = %{output_result @logger.e}
     exe pgm
 
-    pgm = %{rst @logger.flush}
+    pgm = %{output_result @logger.flush}
     exe pgm
 
-    pgm = %{rst @logger.reopen}
+    pgm = %{output_result @logger.reopen}
     exe pgm
   end
 
@@ -662,19 +661,19 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
     pgm = %{@logger.init("#{file}")}
     exe pgm
 
-    pgm = %{rst @logger.reopen}
+    pgm = %{output_result @logger.reopen}
     exe pgm
 
     pgm = "@logger.e"
     exe pgm
 
-    pgm = %{rst @logger.file_closed?}
+    pgm = %{output_result @logger.file_closed?}
     exe pgm
 
-    pgm = "rst @logger.reopen"
+    pgm = "output_result @logger.reopen"
     exe pgm
 
-    pgm = %{rst @logger.file_closed?}
+    pgm = %{output_result @logger.file_closed?}
     exe pgm
 
     pgm = %{@logger.w("test")}
@@ -761,7 +760,7 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
     exe pgm
 
     write_to(file, 50)
-    pgm = %{rst @logger.flush}
+    pgm = %{output_result @logger.flush}
     exe pgm
     write_to(file, 5)
   end
@@ -771,7 +770,7 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
     pgm = %{@logger.init("#{file}")}
     exe pgm
 
-    pgm = %{rst @logger.threshold}
+    pgm = %{output_result @logger.threshold}
     exe pgm
   end
 
@@ -877,7 +876,7 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
     pgm = %{@logger.init("#{file}")}
     exe pgm
 
-    pgm = %{rst @logger.logging_format}
+    pgm = %{output_result @logger.logging_format}
     exe pgm
 
     pgm = %{@logger.w("logging test")}
@@ -887,7 +886,7 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
     pgm = %{@logger.logging_format = "[$LEVEL]:$DATE => [$LOG]($LEVEL) | $FILE | $FILE-FUL"}
     exe pgm
 
-    pgm = %{rst @logger.logging_format}
+    pgm = %{output_result @logger.logging_format}
     exe pgm
 
     pgm = %{@logger.fatal}
@@ -903,7 +902,7 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
     pgm = %{@logger.init("#{file}")}
     exe pgm
 
-    pgm = %{rst @logger.date_format}
+    pgm = %{output_result @logger.date_format}
     exe pgm
 
     pgm = %{@logger.w("test")}
@@ -913,7 +912,7 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
     pgm = %{@logger.date_format = "%y/%m/%d - %H:%M:%S"}
     exe pgm
 
-    pgm = %{rst @logger.date_format}
+    pgm = %{output_result @logger.date_format}
     exe pgm
 
     pgm = %{@logger.w("test")}
@@ -926,26 +925,26 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
     pgm = %{@logger.init("#{file}", "5K")}
     exe pgm
 
-    pgm = %{rst @logger.rename_format}
+    pgm = %{output_result @logger.rename_format}
     exe pgm
 
     pgm = %{@logger.rename_format=".nyanko."}
     exe pgm
 
-    pgm = %{rst @logger.rename_format}
+    pgm = %{output_result @logger.rename_format}
     exe pgm
 
     write_to(file, 100)
   end
 
   def test_rename_2
-    pgm = %{rst @logger.rename_format}
+    pgm = %{output_result @logger.rename_format}
     exe pgm
 
     pgm = %{@logger.rename_format=".nyanko."}
     exe pgm
 
-    pgm = %{rst @logger.rename_format}
+    pgm = %{output_result @logger.rename_format}
     exe pgm
 
     file = "rename.log"
@@ -1057,82 +1056,82 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
     dump_inode file
   end
 
-  def test_psafe_mode_1
-    dump_var "@psafe_mode"
+  def test_psync_1
+    dump_var "@is_psync"
     dump_var "@enable_wflush"
     dump_var "@sleep_time"
 
-    pgm = %{@logger.psafe_mode}
+    pgm = %{@logger.psync}
     exe pgm
 
-    dump_var "@psafe_mode"
+    dump_var "@is_psync"
     dump_var "@enable_wflush"
     dump_var "@sleep_time"
 
-    file = "psafe_mode.log"
+    file = "psync.log"
     pgm = %{@logger.init("#{file}", "1M", 0)}
     exe pgm
 
-    dump_var "@psafe_mode"
+    dump_var "@is_psync"
     dump_var "@enable_wflush"
     dump_var "@sleep_time"
   end
 
-  def test_psafe_mode_2
-    file = "psafe_mode.log"
+  def test_psync_2
+    file = "psync.log"
     pgm = %{@logger.init("#{file}", "1M", 0)}
     exe pgm
 
-    dump_var "@psafe_mode"
+    dump_var "@is_psync"
     dump_var "@enable_wflush"
     dump_var "@sleep_time"
 
-    pgm = %{@logger.psafe_mode}
+    pgm = %{@logger.psync}
     exe pgm
 
-    dump_var "@psafe_mode"
+    dump_var "@is_psync"
     dump_var "@enable_wflush"
     dump_var "@sleep_time"
   end
 
-  def test_psafe_mode_3
-    dump_var "@psafe_mode"
+  def test_psync_3
+    dump_var "@is_psync"
     dump_var "@enable_wflush"
     dump_var "@sleep_time"
 
-    pgm = %{@logger.psafe_mode(10)}
+    pgm = %{@logger.psync(10)}
     exe pgm
 
-    file = "psafe_mode.log"
+    file = "psync.log"
     pgm = %{@logger.init("#{file}", "1M", 0)}
     exe pgm
 
-    dump_var "@psafe_mode"
+    dump_var "@is_psync"
     dump_var "@enable_wflush"
     dump_var "@sleep_time"
   end
 
   def test_sleep_time_1
-    pgm = %{rst @logger.sleep_time}
+    pgm = %{output_result @logger.sleep_time}
     exe pgm
 
     pgm = %{@logger.sleep_time = 10}
     exe pgm
 
-    pgm = %{rst @logger.sleep_time}
+    pgm = %{output_result @logger.sleep_time}
     exe pgm
 
-    file = "psafe_mode.log"
+    file = "psync.log"
     pgm = %{@logger.init("#{file}", "5K", 0)}
     exe pgm
 
-    pgm = %{rst @logger.sleep_time}
+    pgm = %{output_result @logger.sleep_time}
     exe pgm
 
     pgm = %{@logger.sleep_time = 100}
     exe pgm
 
-    pgm = %{rst @logger.sleep_time}
+    pgm = %{output_result @logger.sleep_time}
     exe pgm
 
     write_to(file, 20)
@@ -1165,32 +1164,14 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
     pgm = %{@logger.init(:STDOUT)}
     exe pgm
 
-    pgm = "rst @logger.sync_inode"
+    pgm = "output_result @logger.sync_inode"
     exe pgm
 
-    pgm = "rst @logger.no_sync_inode"
+    pgm = "output_result @logger.no_sync_inode"
     exe pgm
   end
 
   def test_no_sync_inode_1
-    file = "no_sync.log"
-    pgm = %{@logger.init("#{file}")}
-    exe pgm
-
-    pgm = %{@logger.w "aaa"}
-    exe pgm
-    dump_file file
-
-    pgm = %{@logger.w "bbb"}
-    exe pgm
-    dump_file file
-
-    pgm = %{@logger.w "ccc"}
-    exe pgm
-    dump_file file
-  end
-
-  def test_no_sync_inode_2
     file = "no_sync.log"
     pgm = %{@logger.init("#{file}")}
     exe pgm
@@ -1234,7 +1215,7 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
   end
 
   def test_multi_thread_1
-    file = "thread_safe.log"
+    file = "thread_safety.log"
     pgm = %{@logger.init("#{file}", "10M")}
     exe pgm
 
@@ -1253,19 +1234,21 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
     end
     @logger.e
 
-    cmm %{ruby #{__FILE__} -n "test_grep_thread"}
+    cmm %{ruby #{__FILE__} -n test_grep_thread}
   end
 
   def test_grep_thread
-    file = "thread_safe.log"
     list = ["A", "B", "C", "D"]
-    grep_thread(file, list)
+    Dir["./*.log*"].each do |file|
+        dump_each_thread(file, list)
+    end
   end
 
-  def grep_thread(file, list)
+  def dump_each_thread(file, list)
     data = IO.readlines(file)
+    info "\n\n * file name -> " + file
     list.each do |n|
-      info "Count of Thread #{n} => "+data.grep(/#{n}/).size.to_s
+      info "Count of Thread #{n} => " + data.grep(/#{n}/).size.to_s
     end
   end
 
@@ -1287,53 +1270,63 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
   end
 
   def test_multi_thread_2
-    file = "thread_safe.log"
+    file = "thread_safety.log"
     pgm = %{@logger.init("#{file}", "3M")}
     exe pgm
 
     multi_thread file
+    cmm %{ruby #{__FILE__} -n test_grep_thread}
   end
 
   def test_multi_thread_3
     pgm = %{@logger.compress}
     exe pgm
 
-    file = "thread_safe.log"
+    file = "thread_safety.log"
     pgm = %{@logger.init("#{file}", "3M")}
     exe pgm
 
     multi_thread file
+    cmm %{gzip -d thread_safety.log.1.gz}
+    cmm %{ruby #{__FILE__} -n test_grep_thread}
   end
 
   def test_multi_thread_4
-    file = "thread_safe.log"
+    file = "thread_safety.log"
     pgm = %{@logger.init("#{file}", "DAILY")}
     exe pgm
 
     multi_thread file
     go_back_logs_date file
+    cmm %{ruby #{__FILE__} -n test_multi_thread_4; again when the time comes}
+    cmm %{ruby #{__FILE__} -n test_grep_thread; and after that execute and count}
   end
 
   def test_multi_thread_5
     pgm = %{@logger.compress}
     exe pgm
 
-    file = "thread_safe.log"
+    file = "thread_safety.log"
     pgm = %{@logger.init("#{file}", "DAILY")}
     exe pgm
 
     multi_thread file
     go_back_logs_date file
+    cmm %{ruby #{__FILE__} -n test_multi_thread_4; again when the time comes}
+    cmm %{gzip -d thread_safety.log.yyyymmdd.gz}
+    cmm %{ruby #{__FILE__} -n test_grep_thread; and after that execute and count}
   end
 
   def test_grep_process
-    file = "process_safe.log"
     list = ["A", "B", "C", "D"]
-    grep_process(file, list)
+    Dir["./*.log*"].each do |file|
+        dump_each_process(file, list)
+    end
   end
 
-  def grep_process(file, list)
+  def dump_each_process(file, list)
     data = IO.readlines(file)
+    info "\n\n * file name -> " + file
     list.each do |n|
       info "Count of Process #{n} => "+data.grep(/#{n}/).size.to_s
     end
@@ -1357,76 +1350,86 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
   end
 
   def test_multi_process_1
-    pgm = %{@logger.psafe_mode}
+    pgm = %{@logger.psync}
     exe pgm
 
-    file = "process_safe.log"
+    file = "process_sync.log"
     pgm = %{@logger.init("#{file}", "10M")}
     exe pgm
 
     multi_process file
 
-    cmm %{ruby #{__FILE__} -n "test_grep_process"}
+    cmm %{ruby #{__FILE__} -n test_grep_process}
   end
 
   def test_multi_process_2
-    pgm = %{@logger.psafe_mode}
+    pgm = %{@logger.psync}
     exe pgm
 
-    file = "process_safe.log"
+    file = "process_sync.log"
     pgm = %{@logger.init("#{file}", "3M")}
     exe pgm
 
     multi_process file
+    cmm %{ruby #{__FILE__} -n test_grep_process}
   end
 
   def test_multi_process_3
-    pgm = %{@logger.psafe_mode}
+    pgm = %{@logger.psync}
     exe pgm
 
     pgm = %{@logger.compress}
     exe pgm
 
-    file = "process_safe.log"
+    file = "process_sync.log"
     pgm = %{@logger.init("#{file}", "3M")}
     exe pgm
 
     multi_process file
+    cmm %{gzip -d process_sync.log.1.gz}
+    cmm %{ruby #{__FILE__} -n test_grep_process}
   end
 
   def test_multi_process_4
-    pgm = %{@logger.psafe_mode}
+    pgm = %{@logger.psync}
     exe pgm
 
-    file = "process_safe.log"
+    file = "process_sync.log"
     pgm = %{@logger.init("#{file}", "DAILY")}
     exe pgm
 
     multi_process file
     go_back_logs_date file
+
+    cmm %{ruby #{__FILE__} -n test_multi_process_4; again when the time comes}
+    cmm %{ruby #{__FILE__} -n test_grep_process}
   end
 
   def test_multi_process_5
     pgm = %{@logger.compress}
     exe pgm
 
-    pgm = %{@logger.psafe_mode}
+    pgm = %{@logger.psync}
     exe pgm
 
-    file = "process_safe.log"
+    file = "process_sync.log"
     pgm = %{@logger.init("#{file}", "DAILY")}
     exe pgm
 
     multi_process file
     go_back_logs_date file
+
+    cmm %{ruby #{__FILE__} -n test_multi_process_5; again when the time comes}
+    cmm %{gzip -d process_sync.log.yyyymmdd.gz}
+    cmm %{ruby #{__FILE__} -n test_grep_process; and after that execute and count}
   end
 
   def test_multi_process_6
-    info "Disable process safe mode!!"
+    info "Disable process sync mode!!"
 
-    tempf_dir = "/home/nyanko/logs"
+    tempf_dir = "." 
     info "temp file will be not created at => #{tempf_dir}"
-    file = "#{tempf_dir}/process_safe.log"
+    file = "#{tempf_dir}/process_sync.log"
 
     pgm = %{@logger.init("#{file}")}
     exe pgm
@@ -1435,7 +1438,7 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
       tip fname
     end
 
-    pgm = %{@logger.w("psafe")}
+    pgm = %{@logger.w("psync")}
     exe pgm
     dump_file file
 
@@ -1443,12 +1446,12 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
   end
 
   def test_multi_process_7
-    pgm = %{@logger.psafe_mode}
+    pgm = %{@logger.psync}
     exe pgm
 
-    tempf_dir = "/home/nyanko/logs"
+    tempf_dir = "."
     info "temp file will be created at => #{tempf_dir}"
-    file = "#{tempf_dir}/process_safe.log"
+    file = "#{tempf_dir}/process_sync.log"
     pgm = %{@logger.init("#{file}")}
     exe pgm
 
@@ -1456,7 +1459,7 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
       tip fname
     end
 
-    pgm = %{@logger.w("psafe")}
+    pgm = %{@logger.w("psync")}
     exe pgm
     dump_file file
 
@@ -1464,8 +1467,8 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
   end
 
   def test_multi_process_8
-    tempf_dir = "/home/nyanko/logs"
-    info "first, create temp file => #{tempf_dir}"
+    tempf_dir = "."
+    info "create temp file => #{tempf_dir}"
     tempf_name = "#{tempf_dir}#{File::SEPARATOR}.SimpleRotate_tempfile_#{File.basename($0)}"
 
     pgm = %{File.open("#{tempf_name}", "w").close}
@@ -1475,14 +1478,14 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
       tip fname
     end
 
-    pgm = %{@logger.psafe_mode}
+    pgm = %{@logger.psync}
     exe pgm
 
-    file = "#{tempf_dir}/process_safe.log"
+    file = "#{tempf_dir}/process_sync.log"
     pgm = %{@logger.init("#{file}")}
     exe pgm
 
-    pgm = %{@logger.w("psafe")}
+    pgm = %{@logger.w("psync")}
     exe pgm
     dump_file file
 
@@ -1490,8 +1493,8 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
   end
 
   def test_multi_process_9
-    tempf_dir = "/home/nyanko/logs"
-    info "first, create temp file & write it => #{tempf_dir}"
+    tempf_dir = "."
+    info "create temp file & write it => #{tempf_dir}"
     tempf_name = "#{tempf_dir}#{File::SEPARATOR}.SimpleRotate_tempfile_#{File.basename($0)}"
 
     f = File.open(tempf_name, "w")
@@ -1504,14 +1507,14 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
       tip fname
     end
 
-    pgm = %{@logger.psafe_mode}
+    pgm = %{@logger.psync}
     exe pgm
 
-    file = "#{tempf_dir}/process_safe.log"
+    file = "#{tempf_dir}/process_sync.log"
     pgm = %{@logger.init("#{file}")}
     exe pgm
 
-    pgm = %{@logger.w("psafe")}
+    pgm = %{@logger.w("psync")}
     exe pgm
     dump_file file
 
@@ -1519,13 +1522,13 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
   end
 
   def test_multi_process_10
-    pgm = %{@logger.psafe_mode}
+    pgm = %{@logger.psync}
     exe pgm
 
-    tempf_dir = "/home/nyanko/logs"
+    tempf_dir = "."
     info "temp file will be created at => #{tempf_dir}"
 
-    file = "#{tempf_dir}/process_safe.log"
+    file = "#{tempf_dir}/process_sync.log"
     pgm = %{@logger.init("#{file}")}
     exe pgm
 
@@ -1544,7 +1547,7 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
   end
 
   def test_multi_process_11
-    file = "process_safe.log"
+    file = "process_sync.log"
     if File.exists?(file)
       cmm ("#{file} is already exists! Please remove it!!")
       abort
@@ -1554,10 +1557,10 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
     info %{fork process, #{list.join(",")}, create file same time!}
 
     Parallel.map(list, :in_processes => 4) do |n|
-      pgm = %{@logger.psafe_mode}
+      pgm = %{@logger.psync}
       exe pgm
 
-      file = "process_safe.log"
+      file = "process_sync.log"
       pgm = %{@logger.init("#{file}", "10M")}
       exe pgm
 
@@ -1572,10 +1575,10 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
   end
 
   def test_multi_process_12
-    file = "process_safe.log"
+    file = "process_sync.log"
     info "Test case file exist pattern"
     f = File.open(file, "w")
-    f.puts "===================================="
+    f.puts "new file was created"
     f.close
     dump_file file
 
@@ -1583,10 +1586,10 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
     info %{fork process, #{list.join(",")}, create file same time!}
 
     Parallel.map(list, :in_processes => 4) do |n|
-      pgm = %{@logger.psafe_mode}
+      pgm = %{@logger.psync}
       exe pgm
 
-      file = "process_safe.log"
+      file = "process_sync.log"
       pgm = %{@logger.init("#{file}", "10M")}
       exe pgm
 
@@ -1601,16 +1604,16 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
   end
 
   def test_multi_process_13
-    file = "process_safe.log"
+    file = "process_sync.log"
 
     list  = ["A", "B", "C", "D"]
     info %{fork process, #{list.join(",")}, create file same time!}
 
     Parallel.map(list, :in_processes => 4) do |n|
-      pgm = %{@logger.psafe_mode}
+      pgm = %{@logger.psync}
       exe pgm
 
-      file = "process_safe.log"
+      file = "process_sync.log"
       pgm = %{@logger.init("#{file}", "10M")}
       exe pgm
 
@@ -1623,6 +1626,8 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
       pgm = %{@logger.e}
       exe pgm
     end
+
+    cmm %{ruby #{__FILE__} -n test_grep_process}
   end
 
   def test_no_init_1
@@ -1646,5 +1651,4 @@ class TestSimpleRotate < MiniTest::Unit::TestCase
   end
 end
 
-MiniTest::Unit.autorun
-
+Minitest.autorun

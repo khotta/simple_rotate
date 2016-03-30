@@ -1,4 +1,4 @@
-Copyright (c) 2014 Kazuya Hotta
+Copyright (c) Kazuya Hotta
 
 MIT License
 
