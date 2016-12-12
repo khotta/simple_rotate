@@ -16,16 +16,15 @@ class SimpleRotate
         end
 
         def initialize(sr)
-            @sr          = sr
-            @enable      = sr.instance_variable_get(:@is_psync)
-            @file_name   = sr.instance_variable_get(:@file_name)
+            @sr       = sr
+            @enable   = sr.instance_variable_defined?(:@is_psync) ? sr.instance_variable_get(:@is_psync) : nil
+            file_name = sr.instance_variable_defined?(:@file_name) ? sr.instance_variable_get(:@file_name) : nil
 
             # #init not called
-            return self if @file_name == nil
+            return self if file_name == nil
 
-            @logf        = sr.instance_variable_get(:@logf)
             @try_limit   = 3
-            @@tempf_name = File.dirname(@file_name) + File::SEPARATOR + ".SimpleRotate_tempfile_#{File.basename($0)}"
+            @@tempf_name = File.dirname(file_name) + File::SEPARATOR + ".SimpleRotate_tempfile_#{File.basename($0)}"
 
             create_tempfile if @enable && !@@scheduled_del_lockfile
         end
@@ -59,7 +58,7 @@ class SimpleRotate
         def set_delete_tempfile
             return true if @@scheduled_del_lockfile
 
-            if File.exists?(@@tempf_name)
+            if File.exist?(@@tempf_name)
                 # is it empty?
                 if File.size(@@tempf_name) == 0
                     delete_at_end

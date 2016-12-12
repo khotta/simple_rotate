@@ -45,11 +45,11 @@ class SimpleRotate
             @logf.puts("created@#{gtime}@Please don't delete this line")
             @logf.close
 
-          rescue
-              SimpleRotate::Error.open(@file_name)
-          end
+        rescue
+            SimpleRotate::Error.open(@file_name)
+        end
 
-          openadd
+        openadd
     end
 
     # if file or directory exist, call error
@@ -82,7 +82,7 @@ class SimpleRotate
         que << [%{@sleep_time},       %{0}]
 
         que.each do |q|
-            if eval(%{#{q[0]} == nil})
+            if !eval(%{self.instance_variable_defined? :#{q[0]}})
                 eval(%{#{q[0]} = #{q[1]}})
             end
         end
@@ -213,7 +213,12 @@ class SimpleRotate
     # @return string
     private
     def get_trimmed_log(log)
-        log   = log.to_s
+        if log == nil
+            log = log.inspect
+        else
+            log = log.to_s
+        end
+
         date  = Time.now.strftime(@date_format)
         level = eval("LOG_LEVEL_#{@log_level}")
         return @logging_format.gsub("$DATE", date)
