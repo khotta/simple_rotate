@@ -14,8 +14,6 @@ module ProcessSyncMixin
 
     # lock the temp file
     def lock
-        create_tempfile if !tempf_exists?
-
         reopen_temp_file
 
         cnt = 0

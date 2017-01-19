@@ -78,7 +78,7 @@ class SimpleRotate
             @psync.unlock
         end
 
-        # if block given, colse IO
+        # if block is given, colse IO
         if defined? yield
             yield self
             e

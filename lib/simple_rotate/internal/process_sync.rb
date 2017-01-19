@@ -24,7 +24,9 @@ class SimpleRotate
             return self if file_name == nil
 
             @try_limit   = 3
-            @@tempf_name = File.dirname(file_name) + File::SEPARATOR + ".SimpleRotate_tempfile_#{File.basename($0)}"
+            @@tempf_name = File.dirname(file_name) + File::SEPARATOR + ".simple_rotate_tempfile_#{File.basename($0)}"
+            # replace whitespaces
+            @@tempf_name.gsub!(/\s/, '_')
 
             create_tempfile if @enable && !@@scheduled_del_lockfile
         end
@@ -32,19 +34,16 @@ class SimpleRotate
         # Create the temp file for locking
         private
         def create_tempfile
-            if File.exist?(@@tempf_name)
-                open_temp_file
-                return nil
-            end
-
             begin
-                @@tempf = File.open(@@tempf_name, File::RDWR|File::CREAT|File::EXCL)
+                if tempf_exists?
+                    set_delete_tempfile
+                else
+                    @@tempf = File.open(@@tempf_name, File::RDWR|File::CREAT|File::EXCL)
+                    set_delete_tempfile
+                end
 
             rescue
-                SimpleRotate::Error.warning("Couldn't create temp file => #{@@tempf_name}")
-
-            ensure
-                set_delete_tempfile
+                SimpleRotate::Error.warning("Failed to create temp file => #{@@tempf_name}")
             end
         end
 
@@ -58,7 +57,7 @@ class SimpleRotate
         def set_delete_tempfile
             return true if @@scheduled_del_lockfile
 
-            if File.exist?(@@tempf_name)
+            if tempf_exists?
                 # is it empty?
                 if File.size(@@tempf_name) == 0
                     delete_at_end
@@ -78,7 +77,7 @@ class SimpleRotate
                 begin
                     File.delete(@@tempf_name)
                 rescue
-                    #SimpleRotate::Error.warning("Couldn't delete temp file => #{@@tempf_name}")
+                    SimpleRotate::Error.warning("Failed to delete temp file => #{@@tempf_name}")
                 end
             end
         end
@@ -95,7 +94,7 @@ class SimpleRotate
                 begin
                     @@tempf = File.open(@@tempf_name, File::RDWR|File::CREAT|File::APPEND)
                 rescue
-                    SimpleRotate::Error.warning("Couldn't open temp file => #{@@tempf_name}")
+                    SimpleRotate::Error.warning("Failed to open temp file => #{@@tempf_name}")
                 end
             end
         end
